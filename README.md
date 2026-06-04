@@ -35,7 +35,10 @@ npm install
 npm run dev
 npm run build
 npm run test:codegen
+./scripts/install-git-hooks.sh   # strips Cursor co-author from future commits
 ```
+
+In Cursor: **Settings → Agents → Attribution → Off** so `cursoragent` is not added as a co-author on GitHub.
 
 ## Export rules
 
