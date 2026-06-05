@@ -41,3 +41,9 @@ test("graph wiring uses conditional edges for condition nodes", () => {
   const src = readFileSync(join(root, "src/core/codegen/graph-wiring.ts"), "utf8");
   assert.match(src, /add_conditional_edges/);
 });
+
+test("workflow serialize validates malformed JSON", () => {
+  const src = readFileSync(join(root, "src/core/workflow/serialize.ts"), "utf8");
+  assert.match(src, /parseWorkflow/);
+  assert.match(src, /FORMAT_VERSION/);
+});

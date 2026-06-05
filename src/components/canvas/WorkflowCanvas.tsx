@@ -13,6 +13,7 @@ import {
 import "@xyflow/react/dist/style.css";
 import { useCallback, useRef, useState } from "react";
 
+import { CanvasEmptyState } from "@/components/canvas/CanvasEmptyState";
 import { AgentNode } from "@/components/nodes/AgentNode";
 import type { AgentNodeType } from "@/core/workflow";
 import { AGENT_NODE_TYPE, type FlowEdge } from "@/editor/adapters/react-flow";
@@ -100,7 +101,8 @@ function CanvasInner() {
   const editingEdge = state.flowEdges.find((e) => e.id === editingEdgeId);
 
   return (
-    <div ref={wrapperRef} className="h-full w-full">
+    <div ref={wrapperRef} className="relative h-full w-full">
+      {state.flowNodes.length === 0 && <CanvasEmptyState />}
       <ReactFlow
         nodes={state.flowNodes}
         edges={state.flowEdges}

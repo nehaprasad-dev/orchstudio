@@ -14,6 +14,8 @@ import { toWorkflowGraph } from "@/editor/adapters/react-flow";
 import { useTheme } from "@/editor/theme/use-theme";
 import { useWorkflowEditor } from "@/editor/store/workflow-context";
 import { NodePalette } from "@/components/palette/NodePalette";
+import { WorkflowIO } from "@/components/sidebar/WorkflowIO";
+import { WorkflowStatus } from "@/components/sidebar/WorkflowStatus";
 import { Button, Divider } from "@/ui/primitives";
 
 export function Sidebar() {
@@ -58,7 +60,7 @@ export function Sidebar() {
       <header className="flex items-center justify-between border-b border-zinc-200 px-4 py-3 dark:border-zinc-800">
         <div>
           <h1 className="text-sm font-bold">Agent Blueprint</h1>
-          <p className="text-xs text-zinc-500">Visual LangGraph editor</p>
+          <p className="text-xs text-zinc-500">ComfyUI for agents — built in public</p>
         </div>
         <Button
           variant="ghost"
@@ -71,7 +73,10 @@ export function Sidebar() {
       </header>
 
       <div className="flex-1 space-y-6 overflow-y-auto p-4">
+        <WorkflowStatus />
         <NodePalette />
+        <Divider />
+        <WorkflowIO />
         <Divider />
         <section className="space-y-2">
           <p className="text-xs font-medium uppercase tracking-wide text-zinc-500">

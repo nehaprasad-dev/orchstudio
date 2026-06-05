@@ -40,6 +40,13 @@ npm run test:codegen
 
 In Cursor: **Settings → Agents → Attribution → Off** so `cursoragent` is not added as a co-author on GitHub.
 
+## Product features
+
+- **Graph health** — Live validation in the sidebar (errors block export)
+- **Auto-save** — Workflow persists in `localStorage`
+- **Share JSON** — Export/import `.json` workflow files without a backend
+- **Self-documenting code** — Exported Python includes a workflow map + Mermaid diagram
+
 ## Export rules
 
 Export runs `validateWorkflow` first. Errors (missing Start, condition without two branches) block the modal and show inline in the sidebar.

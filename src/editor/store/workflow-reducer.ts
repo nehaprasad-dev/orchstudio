@@ -6,6 +6,13 @@ import {
   type NodeChange,
 } from "@xyflow/react";
 
+import { createDefaultConfig } from "@/core/workflow";
+import type {
+  AgentNodeConfig,
+  AgentNodeType,
+  WorkflowGraph,
+  WorkflowNode,
+} from "@/core/workflow";
 import type { FlowEdge, FlowNode } from "../adapters/react-flow";
 import {
   createFlowEdge,
@@ -13,6 +20,22 @@ import {
   toFlowEdges,
   toFlowNodes,
 } from "../adapters/react-flow";
+
+let nodeCounter = 0;
+
+function nextId(type: AgentNodeType): string {
+  nodeCounter += 1;
+  return `${type}-${nodeCounter}`;
+}
+
+function syncNodeCounter(nodes: WorkflowNode[]): void {
+  let max = 0;
+  for (const node of nodes) {
+    const match = node.id.match(/-(\d+)$/);
+    if (match) max = Math.max(max, Number.parseInt(match[1], 10));
+  }
+  nodeCounter = max;
+}
 
 function syncNodePositions(nodes: FlowNode[]): FlowNode[] {
   return nodes.map((node) => ({
@@ -25,15 +48,6 @@ function syncNodePositions(nodes: FlowNode[]): FlowNode[] {
     },
   }));
 }
-import { createDefaultConfig } from "@/core/workflow";
-import type { AgentNodeConfig, AgentNodeType, WorkflowGraph } from "@/core/workflow";
-
-let nodeCounter = 0;
-
-function nextId(type: AgentNodeType): string {
-  nodeCounter += 1;
-  return `${type}-${nodeCounter}`;
-}
 
 export interface EditorState {
   flowNodes: FlowNode[];
@@ -43,6 +57,7 @@ export interface EditorState {
   exportOpen: boolean;
   exportCode: string;
   exportErrors: string[];
+  hydrated: boolean;
 }
 
 export const initialEditorState: EditorState = {
@@ -53,6 +68,7 @@ export const initialEditorState: EditorState = {
   exportOpen: false,
   exportCode: "",
   exportErrors: [],
+  hydrated: false,
 };
 
 export type EditorAction =
@@ -64,6 +80,7 @@ export type EditorAction =
   | { type: "update-config"; nodeId: string; config: AgentNodeConfig }
   | { type: "update-edge-label"; edgeId: string; label: string }
   | { type: "load-graph"; graph: WorkflowGraph }
+  | { type: "hydrate"; graph: WorkflowGraph | null }
   | { type: "clear" }
   | { type: "sidebar-collapsed"; collapsed: boolean }
   | { type: "export-open"; open: boolean }
@@ -74,6 +91,17 @@ export function editorReducer(
   action: EditorAction
 ): EditorState {
   switch (action.type) {
+    case "hydrate":
+      if (action.graph) {
+        syncNodeCounter(action.graph.nodes);
+        return {
+          ...state,
+          flowNodes: toFlowNodes(action.graph.nodes),
+          flowEdges: toFlowEdges(action.graph.edges),
+          hydrated: true,
+        };
+      }
+      return { ...state, hydrated: true };
     case "nodes-change":
       return {
         ...state,
@@ -131,6 +159,7 @@ export function editorReducer(
         ),
       };
     case "load-graph":
+      syncNodeCounter(action.graph.nodes);
       return {
         ...state,
         flowNodes: toFlowNodes(action.graph.nodes),
@@ -139,9 +168,11 @@ export function editorReducer(
         exportErrors: [],
       };
     case "clear":
+      nodeCounter = 0;
       return {
         ...initialEditorState,
         sidebarCollapsed: state.sidebarCollapsed,
+        hydrated: true,
       };
     case "sidebar-collapsed":
       return { ...state, sidebarCollapsed: action.collapsed };
